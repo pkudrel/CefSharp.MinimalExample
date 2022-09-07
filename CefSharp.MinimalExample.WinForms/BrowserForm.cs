@@ -27,7 +27,7 @@ namespace CefSharp.MinimalExample.WinForms
             Text = title;
             WindowState = FormWindowState.Maximized;
 
-            browser = new ChromiumWebBrowser("www.google.com");
+            browser = new ChromiumWebBrowser("https://yandex.com/search/?text=winter+olimpic+summer+olympics");
             toolStripContainer.ContentPanel.Controls.Add(browser);
 
             browser.IsBrowserInitializedChanged += OnIsBrowserInitializedChanged;
@@ -196,6 +196,26 @@ namespace CefSharp.MinimalExample.WinForms
         private void ShowDevToolsMenuItemClick(object sender, EventArgs e)
         {
             browser.ShowDevTools();
+        }
+
+        private async void button1_Click(object sender, EventArgs e)
+        {
+            const string s1 = @"
+var f1 = async function(){return new Promise(function(resolve, reject) { setTimeout(resolve.bind(null, { a: 'CefSharp', b: 42, }), 1000); });}
+var f2 = async (ms) => { return new Promise(resolve => setTimeout(resolve, ms));};
+
+return (async function() {
+    await f2(2000);
+    const result = await f1();
+    await f2(2000);    
+    return result;
+})();
+";
+            var mainFrame = browser.GetMainFrame();
+            if (mainFrame != null)
+            {
+                var b1 = await mainFrame.EvaluateScriptAsPromiseAsync(s1);
+            }
         }
     }
 }
